@@ -3,7 +3,28 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
+#include <map>
+#include <valarray>
 
+/* 14. Longest Common Prefix */
+std::string Solution::longestCommonPrefix(std::vector<std::string>& strs)
+{
+	if (strs.size() == 0)
+		return "";
+	std::string ans = *strs.begin();
+	for (std::vector<std::string>::iterator itr = strs.begin(); (itr + 1) != strs.end(); ++itr)
+	{
+		std::cout << ans << std::endl;
+		for (int j = 0; j < ans.length(); j++)
+		{
+			if ((*itr)[j] == (*(itr + 1))[j])
+				continue;
+			else
+				ans = ans.substr(0, j);
+		}
+	}
+	return ans;
+}
 
 /* 20. Valid Parentheses */
 bool Solution::isValid(std::string s)
@@ -43,6 +64,59 @@ bool Solution::isValid(std::string s)
 	if (arr.size() != 0)
 		return false;
 	return true;
+}
+
+/* 67. Add Binary */
+std::string Solution::addBinary(std::string a, std::string b)
+{
+	long long _a = 0, _b = 0, carry = 0;
+	std::string ans;
+	for (int i = 0; i < a.length() || i < b.length(); i++)
+	{
+		std::cout << a[a.length() - i - 1] << " " << b[b.length() - i - 1] << " " << carry << std::endl;
+		if (i < a.length() && i < b.length())
+		{
+			if (a[a.length() - i - 1] + b[b.length() - i - 1] - 96 + carry > 1)
+			{
+				ans.insert(0, std::to_string(a[a.length() - i - 1] + b[b.length() - i - 1] - 96 + carry - 2));
+				carry = 1;
+			}
+			else
+			{
+				ans.insert(0, std::to_string(a[a.length() - i - 1] + b[b.length() - i - 1] - 96 + carry));
+				carry = 0;
+			}
+		}
+		else if (i < a.length())
+		{
+			if (a[a.length() - i - 1] - 48 + carry > 1)
+			{
+				ans.insert(0, std::to_string(a[a.length() - i - 1] - 48 + carry - 2));
+				carry = 1;
+			}
+			else
+			{
+				ans.insert(0, std::to_string(a[a.length() - i - 1] - 48 + carry));
+				carry = 0;
+			}
+		}
+		else
+		{
+			if (b[b.length() - i - 1] - 48 + carry > 1)
+			{
+				ans.insert(0, std::to_string(b[b.length() - i - 1] - 48 + carry - 2));
+				carry = 1;
+			}
+			else
+			{
+				ans.insert(0, std::to_string(b[b.length() - i - 1] - 48 + carry));
+				carry = 0;
+			}
+		}
+	}
+	if (carry == 1)
+		ans.insert(0, "1");
+	return ans;
 }
 
 /* 125. Valid Palindrome */
@@ -91,6 +165,41 @@ std::string Solution::reverseVowels(std::string s)
 	return s;
 }
 
+/* 386. Lexicographical Numbers */
+std::vector<int> Solution::lexicalOrder(int n)
+{
+	std::vector<int> ans;
+	//1 10 100 101 102 ... 11 110 111 ...//123
+	int k = 0;
+	for (int i = 1, j = 0; j < n; j++)
+	{
+		std::cout << i << std::endl;
+		ans.push_back(i);
+		if (i * 10 <= n)
+			i *= 10;
+		else if (i + 1 > n)
+		{
+			i /= 10;
+			i++;
+			while (i % 10 == 0)
+			{
+				i /= 10;
+			}
+		}
+		else if ((i + 1) % 10 != 0)
+			i++;
+		else
+		{
+			i++;
+			while (i / 10 > 0 && i % 10 == 0)
+			{
+				i /= 10;
+			}
+		}
+	}
+	return ans;
+}
+
 /* 459. Repeated Substring Pattern */
 bool Solution::repeatedSubstringPattern(std::string s)
 {
@@ -111,6 +220,80 @@ bool Solution::repeatedSubstringPattern(std::string s)
 		}
 	}
 	return false;
+}
+
+/* 461. Hamming Distance */
+int Solution::hammingDistance(int x, int y)
+{
+	int z = x ^ y, ans = 0;
+	while (z > 0)
+	{
+		if (z % 2 != 0)
+			ans++;
+		z /= 2;
+	}
+	return ans;
+}
+
+/* 476. Number Complement */
+int Solution::findComplement(int num)
+{
+	std::vector<int> ans;
+	int _ans = 0;
+	while (num > 0)
+	{
+		if (num % 2 != 0)
+			ans.push_back(0);
+		else
+			ans.push_back(1);
+		num /= 2;
+	}
+	for (int i = 0; i < ans.size(); i++)
+	{
+		std::cout << ans[i] << std::endl;
+	}
+	for (int i = 0; i < ans.size(); i++)
+	{
+		_ans += ans[i] * pow(2, i);
+	}
+	return _ans;
+}
+
+/* 500. Keyboard Row */
+std::vector<std::string> Solution::findWords(std::vector<std::string>& words)
+{
+	std::map<char, int> dict;
+	char row0[] = {'q','w','e','r','t','y','u','i','o','p','Q','W','E','R','T','Y','U','I','O','P'},
+		row1[] = {'a','s','d','f','g','h','j','k','l','A','S','D','F','G','H','J','K','L'},
+		row2[] = {'z','x','c','v','b','n','m','Z','X','C','V','B','N','M'};
+	for (char a : row0)
+	{
+		dict[a] = 0;
+	}
+	for (char a : row1)
+	{
+		dict[a] = 1;
+	}
+	for (char a : row2)
+	{
+		dict[a] = 2;
+	}
+	std::vector<std::string> ans;
+	for (std::vector<std::string>::iterator itr = words.begin(); itr != words.end(); ++itr)
+	{
+		int group = dict[(*itr)[0]];
+		if (itr->size() < 2)
+			ans.push_back(*itr);
+		else
+			for (int i = 1; i < itr->size(); i++)
+			{
+				if (group != dict[(*itr)[i]])
+					break;
+				else if (i == itr->size() - 1)
+					ans.push_back(*itr);
+			}
+	}
+	return ans;
 }
 
 /* 520. Detect Capital */
